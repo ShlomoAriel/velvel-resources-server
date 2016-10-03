@@ -567,6 +567,9 @@ app.get('/api/findUserLike', passport.authenticate('jwt', { session: false }), f
     });
     res.json(objectArray);
 });
+app.get('/api/test', (req, res) => {
+    res.status(200).send('OK');
+});
 app.get('/api/getUserSites/:id', (req, res) => {
     SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
         if (err) {
