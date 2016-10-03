@@ -603,9 +603,10 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
         })
 });
 app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
-    console.log('date: ' + req.param('date'));
+    let sites = req.param('sites');
+    console.log('date: ' + req.param('date') + ' sites= ' + sites);
     DailyResourceModel
-        .find({ date: req.param('date') ,site:{user_ids:req.param('id')}})
+        .find({ date: req.param('date') })
         .populate([{
             path: 'resourceType',
             model: 'ResourceType'
