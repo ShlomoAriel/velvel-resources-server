@@ -619,7 +619,12 @@ app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: fal
                 res.send('find no good' + err);
             }
             else {
-                res.json(items);
+                let result = {};
+                 _forEach(items,(o)=>{
+                   result += _.intersection(sites,o.sites);
+                }); 
+                
+                res.json(result);
             }
         })
 });
