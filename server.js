@@ -652,14 +652,14 @@ app.post('/api/addDailyDefaultResources', passport.authenticate('jwt', { session
                         }
                     });
                 });
-                 res.status(200).send('OK');
+                res.status(200).send('OK');
             }
         })
 
 
 
 
-   
+
 });
 app.put('/api/updateDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyResourceModel.findOneAndUpdate(
@@ -710,14 +710,46 @@ function findLike(model, searchString) {
 }
 app.listen(3001);
 console.log('Listening on localhost 3001');
-mongoose.connect('mongodb://localhost/example');
+mongoose.connect('mongodb://user1:a1345678@ds015995.mlab.com:15995/velevltest');
+// mongoose.connect('mongodb://localhost/example');
+
 var db = mongoose.connection;
 // pass passport for configuration
 require('./config/passport')(passport);
-
+function initDB() {
+    var role1 = new RoleModel({
+        _id: "57d27d4313d468481b1fe12e",
+        name: "מנהל"
+    });
+    role1.save();
+    var role2 = new RoleModel({
+        _id: "57d2805f13d468481b1fe130",
+        name: "מנהל איזור"
+    });
+    role2.save();
+    var role3 = new RoleModel({
+        _id: "57d2837a13d468481b1fe133",
+        name: "מפקח"
+    });
+    role3.save();
+    var user = new UserModel(
+        {
+            email: "shlomoariel@gmail.com",
+            name: "Shlomo",
+            password: "a1345678",
+            role: {
+                _id: "57d27d4313d468481b1fe12e",
+                name: "מנהל"
+            }
+        }
+    );
+    user.save();
+}
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
     console.log('greeting');
+    initDB();
+
     //db.example.update({}, {$unset: {words:1}} , {multi: true});
     TypeModel.update({}, { $unset: { value: 1 } }, { multi: true });
     RoleModel.update({}, { $unset: { value: 1 } }, { multi: true });
