@@ -621,7 +621,7 @@ app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: fal
             else {
                 let result = {};
                  _forEach(items,(o)=>{
-                   if(_.includes(sites,o._id)){
+                   if(_.includes(sites,o.site._id)){
                        result += o;
                    }
                 }); 
