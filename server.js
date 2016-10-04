@@ -602,11 +602,9 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
             }
         })
 });
-app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
-    let sites = req.param('sites');
-    console.log('date: ' + req.param('date') + ' sites= ' + sites);
-    DailyResourceModel
-        .find({ date: req.param('date') })
+function getDailyResources(date, siteId){
+     return DailyResourceModel
+        .find({ date: date, site:{_id:siteId }})
         .populate([{
             path: 'resourceType',
             model: 'ResourceType'
@@ -619,14 +617,50 @@ app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: fal
                 res.send('find no good' + err);
             }
             else {
-                let result = {};
-                 _forEach(items,(o)=>{
-                   if(_.includes(sites,o.site._id)){
-                       result += o;
-                   }
-                }); 
-                
-                res.json(result);
+                // console.log('items = ' + items);
+                return items;
+            }
+        })
+}
+app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
+    let siteIds = req.param('sites');
+    let date = req.param('date');
+    
+    // let result=[];
+    // _.forEach(siteIds, (siteId)=>{
+    //     getDailyResources(date,siteId).then((res)=>{
+    //         console.log('\nresponse: \n' +res+'\n res.data'+ res.data);
+    //         result.push(res);
+    //     });
+    // });
+    // res.json(result);
+    DailyResourceModel
+        .find({ date: req.param('date'),
+        site:
+            {$in: siteIds.map(function(o){ return mongoose.Types.ObjectId(o);})}
+    })
+        .populate([{
+            path: 'resourceType',
+            model: 'ResourceType'
+        }, {
+                path: 'site',
+                model: 'Site'
+            }])
+        .exec(function (err, items) {
+            if (err) {
+                res.send('find no good' + err);
+            }
+            else {
+                // let result = {};
+                //  console.log('items= ' + items);
+                //  _.forEach(items,(o)=>{
+                //      console.log('o.site._id= ' + o.site._id + ' sites= ' + sites);
+                //    if(_.includes(sites,o.site._id)){
+                //        result += o;
+                //    }
+                // }); 
+                // console.log('results= ' + result);
+                res.json(items);
             }
         })
 });
