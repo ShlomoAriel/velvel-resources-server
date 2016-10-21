@@ -571,17 +571,18 @@ app.get('/api/test', (req, res) => {
     res.status(200).send('OK');
 });
 app.get('/api/getUserSites/:id', (req, res) => {
-    if (UserModel.isAdmin()) {
-        SiteModel.find(, function (err, sites) {
+    if (UserModel.isAdmin,(isAdmin)=>{
+        if(isAdmin){
+            SiteModel.find(, function (err, sites) {
             if (err) {
                 res.send('find no good' + err);
             }
             else {
                 res.json(sites);
             }
-        });
-    }
-    else {
+        });     
+        }
+        else {
         SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
             if (err) {
                 res.send('find no good' + err);
@@ -591,6 +592,8 @@ app.get('/api/getUserSites/:id', (req, res) => {
             }
         });
     }
+    });
+    
 
 })
 //==========================================END USERS========================================================
