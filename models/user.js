@@ -33,6 +33,9 @@ userSchema.pre('save', function (next) {
         return next();
     }
 });
+userSchema.methods.isAdmin = function () {
+    return this.role._id === '57d27d4313d468481b1fe12e';
+}
 userSchema.methods.compareHashed = function (password, cb) {
     console.log('compare passwords: \n' + this.password + '\n' + password);
     if (password === this.password) {
