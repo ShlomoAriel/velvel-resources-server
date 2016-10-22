@@ -580,7 +580,7 @@ app.get('/api/getUserSites/:id', (req, res) => {
                 res.send('isAdmin');
             }
             else {
-                res.send('not admin');
+                res.send('role is ' + user.role._id);
             }
         });
     });
