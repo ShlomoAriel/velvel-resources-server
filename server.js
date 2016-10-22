@@ -591,7 +591,7 @@ app.get('/api/getUserSites/:id', (req, res) => {
                     res.send('find no good' + err);
                 }
                 else {
-                    res.send(user.role._id === '57d27d4313d468481b1fe12e');
+                    res.send(user.role._id);
                 }
             });
             }
