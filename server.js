@@ -578,7 +578,7 @@ app.get('/api/getUserSites/:id', (req, res) => {
             throw err;
         }
         if (!user) {
-            res.send({ success: false, msg: 'Authentication failed. User not found.' });
+            res.send({ success: false, msg: 'Authentication failed. User not found.' +req.body.id});
         } else {
             // check if password matches
             user.isAdmin(function (isAdmin) {
