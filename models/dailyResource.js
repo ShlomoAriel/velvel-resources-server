@@ -20,6 +20,6 @@ var DailyResourceSchema = new Schema({
         required: true,
     }
 });
-DailyResourceSchema.index({ amount: 1, date: 1 }, { unique: true });
+// submissionSchema.index({ email: 1, sweepstakes_id: 1 }, { unique: true });
 var DailyResource = mongoose.model('DailyResource', DailyResourceSchema);
 module.exports = DailyResource;
