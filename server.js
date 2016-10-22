@@ -573,7 +573,7 @@ app.get('/api/test', (req, res) => {
 app.get('/api/getUserSites/:id', (req, res) => {
     if (UserModel.isAdmin((isAdmin)=>{
         if(isAdmin){
-            SiteModel.find(, function (err, sites) {
+            SiteModel.find( function (err, sites) {
             if (err) {
                 res.send('find no good' + err);
             }
