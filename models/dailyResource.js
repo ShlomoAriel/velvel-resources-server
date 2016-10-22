@@ -20,5 +20,6 @@ var DailyResourceSchema = new Schema({
         required: true,
     }
 });
+DailyResourceSchema.index({ resourceType: 1, date: 1 }, { unique: true });
 var DailyResource = mongoose.model('DailyResource', DailyResourceSchema);
 module.exports = DailyResource;
