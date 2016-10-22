@@ -571,7 +571,9 @@ app.get('/api/test', (req, res) => {
     res.status(200).send('OK');
 });
 app.get('/api/getUserSites/:id', (req, res) => {
-    UserModel.findById(req.params.id).populate('role').exec(function (err, user) {
+    UserModel.findById(req.params.id)
+    .populate('role')
+    .exec(function (err, user) {
         user.isAdmin(function (isAdmin) {
             if (err) {
                 res.send('find err' + err);
@@ -584,15 +586,15 @@ app.get('/api/getUserSites/:id', (req, res) => {
             }
         });
     });
-    SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
-        if (err) {
-            res.send('find no good' + err);
-        }
-        else {
-            res.json(sites);
-        }
-    });
-})
+    // SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
+    //     if (err) {
+    //         res.send('find no good' + err);
+    //     }
+    //     else {
+    //         res.json(sites);
+    //     }
+    // });
+});
 //==========================================END USERS========================================================
 //==========================================Daily Resources========================================================
 app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
