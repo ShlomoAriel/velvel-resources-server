@@ -571,6 +571,19 @@ app.get('/api/test', (req, res) => {
     res.status(200).send('OK');
 });
 app.get('/api/getUserSites/:id', (req, res) => {
+    UserModel.findById(req.params.id, function (err, user) {
+        user.isAdmin(function (isAdmin) {
+            if (err) {
+                res.send('find err' + err);
+            }
+            else if (isAdmin) {
+                res.send('isAdmin');
+            }
+            else {
+                res.send('not admin');
+            }
+        });
+    });
     SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
         if (err) {
             res.send('find no good' + err);
@@ -602,9 +615,9 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
             }
         })
 });
-function getDailyResources(date, siteId){
-     return DailyResourceModel
-        .find({ date: date, site:{_id:siteId }})
+function getDailyResources(date, siteId) {
+    return DailyResourceModel
+        .find({ date: date, site: { _id: siteId } })
         .populate([{
             path: 'resourceType',
             model: 'ResourceType'
@@ -625,7 +638,7 @@ function getDailyResources(date, siteId){
 app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
     let siteIds = req.param('sites');
     let date = req.param('date');
-    
+
     // let result=[];
     // _.forEach(siteIds, (siteId)=>{
     //     getDailyResources(date,siteId).then((res)=>{
@@ -635,10 +648,11 @@ app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: fal
     // });
     // res.json(result);
     DailyResourceModel
-        .find({ date: req.param('date'),
-        site:
-            {$in: siteIds.map(function(o){ return mongoose.Types.ObjectId(o);})}
-    })
+        .find({
+            date: req.param('date'),
+            site:
+            { $in: siteIds.map(function (o) { return mongoose.Types.ObjectId(o); }) }
+        })
         .populate([{
             path: 'resourceType',
             model: 'ResourceType'
