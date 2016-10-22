@@ -574,11 +574,9 @@ app.get('/api/getUserSites/:id', (req, res) => {
     UserModel.findById(req.params.id)
         .populate('role')
         .exec(function (err, user) {
-            let searchObject = {}
-            if (user.role._id !== '57d27d4313d468481b1fe12e') {
-                searchObject.user_ids = req.params.id;
-            }
-            SiteModel.find( function (err, sites) {
+            let searchObject = {};
+            if (user.role._id === '57d27d4313d468481b1fe12e') {
+                SiteModel.find( function (err, sites) {
                 if (err) {
                     res.send('find no good' + err);
                 }
@@ -586,6 +584,17 @@ app.get('/api/getUserSites/:id', (req, res) => {
                     res.json(sites);
                 }
             });
+            }
+            else{
+                SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
+                if (err) {
+                    res.send('find no good' + err);
+                }
+                else {
+                    res.json(sites);
+                }
+            });
+            }
         });
 });
 //==========================================END USERS========================================================
