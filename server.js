@@ -572,28 +572,21 @@ app.get('/api/test', (req, res) => {
 });
 app.get('/api/getUserSites/:id', (req, res) => {
     UserModel.findById(req.params.id)
-    .populate('role')
-    .exec(function (err, user) {
-        user.isAdmin(function (isAdmin) {
-            if (err) {
-                res.send('find err' + err);
+        .populate('role')
+        .exec(function (err, user) {
+            let searchObject = {}
+            if (user.role._id !== '57d27d4313d468481b1fe12e') {
+                searchObject.user_ids = req.params.id;
             }
-            else if (isAdmin) {
-                res.send('isAdmin');
-            }
-            else {
-                res.send('role is ' + user.role._id);
-            }
+            SiteModel.find(searchObject, function (err, sites) {
+                if (err) {
+                    res.send('find no good' + err);
+                }
+                else {
+                    res.json(sites);
+                }
+            });
         });
-    });
-    // SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
-    //     if (err) {
-    //         res.send('find no good' + err);
-    //     }
-    //     else {
-    //         res.json(sites);
-    //     }
-    // });
 });
 //==========================================END USERS========================================================
 //==========================================Daily Resources========================================================
