@@ -578,7 +578,7 @@ app.get('/api/getUserSites/:id', (req, res) => {
             if (user.role._id !== '57d27d4313d468481b1fe12e') {
                 searchObject.user_ids = req.params.id;
             }
-            SiteModel.find(searchObject, function (err, sites) {
+            SiteModel.find( function (err, sites) {
                 if (err) {
                     res.send('find no good' + err);
                 }
