@@ -572,13 +572,13 @@ app.get('/api/test', (req, res) => {
 });
 app.get('/api/getUserSites/:id', (req, res) => {
     UserModel.findOne({
-        _id: req.body.id
+        _id: req.params.id
     }).populate('role').exec(function (err, user) {
         if (err){
             throw err;
         }
         if (!user) {
-            res.send({ success: false, msg: 'Authentication failed. User not found.' +req.body.id});
+            res.send({ success: false, msg: 'Authentication failed. User not found.' +req.params.id});
         } else {
             // check if password matches
             user.isAdmin(function (isAdmin) {
