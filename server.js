@@ -814,6 +814,7 @@ db.once('open', function () {
     initDB();
 
     //db.example.update({}, {$unset: {words:1}} , {multi: true});
+    DailyResourceModel.set('autoIndex', false);
     TypeModel.update({}, { $unset: { value: 1 } }, { multi: true });
     RoleModel.update({}, { $unset: { value: 1 } }, { multi: true });
     SiteModel.find(function (err, sites) {
