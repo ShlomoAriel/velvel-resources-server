@@ -571,30 +571,40 @@ app.get('/api/test', (req, res) => {
     res.status(200).send('OK');
 });
 app.get('/api/getUserSites/:id', (req, res) => {
-    if (UserModel.isAdmin((isAdmin)=>{
-        if(isAdmin){
-            SiteModel.find( function (err, sites) {
-            if (err) {
-                res.send('find no good' + err);
-            }
-            else {
-                res.json(sites);
-            }
-        });     
+    UserModel.findOne({
+        _id: req.body.id
+    }).populate('role').exec(function (err, user) {
+        if (err){
+            throw err;
         }
-        else {
-        SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
-            if (err) {
-                res.send('find no good' + err);
-            }
-            else {
-                res.json(sites);
-            }
-        });
-    }
-    }));
-    
-
+        if (!user) {
+            res.send({ success: false, msg: 'Authentication failed. User not found.' });
+        } else {
+            // check if password matches
+            user.isAdmin(function (isAdmin) {
+                if (isAdmin) {
+                    SiteModel.find(function (err, sites) {
+                        if (err) {
+                            res.send('find no good' + err);
+                        }
+                        else {
+                            res.json(sites);
+                        }
+                    });
+                }
+                else {
+                    SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
+                        if (err) {
+                            res.send('find no good' + err);
+                        }
+                        else {
+                            res.json(sites);
+                        }
+                    });
+                }
+            });
+        }
+    });
 })
 //==========================================END USERS========================================================
 //==========================================Daily Resources========================================================
