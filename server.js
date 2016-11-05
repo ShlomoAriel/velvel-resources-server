@@ -16,6 +16,7 @@ var DailyDefaultModel = require('./models/dailyDefault');
 var ResourceModel = require('./models/resource');
 var RoleModel = require('./models/role');
 var DailyResourceModel = require('./models/dailyResource');
+var DailyCommentModel = require('./models/dailyComment');
 
 
 //------------------pasport
@@ -619,38 +620,9 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
             }
         })
 });
-function getDailyResources(date, siteId) {
-    return DailyResourceModel
-        .find({ date: date, site: { _id: siteId } })
-        .populate([{
-            path: 'resourceType',
-            model: 'ResourceType'
-        }, {
-                path: 'site',
-                model: 'Site'
-            }])
-        .exec(function (err, items) {
-            if (err) {
-                res.send('find no good' + err);
-            }
-            else {
-                // console.log('items = ' + items);
-                return items;
-            }
-        })
-}
 app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
     let siteIds = req.param('sites');
     let date = req.param('date');
-
-    // let result=[];
-    // _.forEach(siteIds, (siteId)=>{
-    //     getDailyResources(date,siteId).then((res)=>{
-    //         console.log('\nresponse: \n' +res+'\n res.data'+ res.data);
-    //         result.push(res);
-    //     });
-    // });
-    // res.json(result);
     DailyResourceModel
         .find({
             date: req.param('date'),
@@ -669,15 +641,6 @@ app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: fal
                 res.send('find no good' + err);
             }
             else {
-                // let result = {};
-                //  console.log('items= ' + items);
-                //  _.forEach(items,(o)=>{
-                //      console.log('o.site._id= ' + o.site._id + ' sites= ' + sites);
-                //    if(_.includes(sites,o.site._id)){
-                //        result += o;
-                //    }
-                // }); 
-                // console.log('results= ' + result);
                 res.json(items);
             }
         })
@@ -691,38 +654,6 @@ app.post('/api/addDailyResource', passport.authenticate('jwt', { session: false 
         }
         res.status(200).send('OK');
     });
-});
-app.post('/api/addDailyDefaultResources', passport.authenticate('jwt', { session: false }), function (req, res) {
-    console.log(req.body);
-
-
-
-    DailyDefaultModel
-        .find()
-        .exec(function (err, items) {
-            if (err) {
-                res.send('find no good' + err);
-            }
-            else {
-                _.forEach(items, (object) => {
-                    var dailyResource = new DailyResourceModel(req.body);
-                    dailyResource.resourceType = object;
-                    dailyResource.amount = 0;
-                    console.log('dailyResource= ' + dailyResource);
-                    dailyResource.save((err, newItem) => {
-                        if (err) {
-                            res.send('Error adding default DailyResource\n' + err);
-                        }
-                    });
-                });
-                res.status(200).send('OK');
-            }
-        })
-
-
-
-
-
 });
 app.put('/api/updateDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyResourceModel.findOneAndUpdate(
@@ -750,8 +681,140 @@ app.delete('/api/deleteDailyResource/:id', passport.authenticate('jwt', { sessio
             }
         });
 });
+
+function getDailyResources(date, siteId) {
+    return DailyResourceModel
+        .find({ date: date, site: { _id: siteId } })
+        .populate([{
+            path: 'resourceType',
+            model: 'ResourceType'
+        }, {
+                path: 'site',
+                model: 'Site'
+            }])
+        .exec(function (err, items) {
+            if (err) {
+                res.send('find no good' + err);
+            }
+            else {
+                // console.log('items = ' + items);
+                return items;
+            }
+        })
+}
+app.post('/api/addDailyDefaultResources', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyDefaultModel
+        .find()
+        .exec(function (err, items) {
+            if (err) {
+                res.send('find no good' + err);
+            }
+            else {
+                _.forEach(items, (object) => {
+                    var dailyResource = new DailyResourceModel(req.body);
+                    dailyResource.resourceType = object;
+                    dailyResource.amount = 0;
+                    console.log('dailyResource= ' + dailyResource);
+                    dailyResource.save((err, newItem) => {
+                        if (err) {
+                            res.send('Error adding default DailyResource\n' + err);
+                        }
+                    });
+                });
+                res.status(200).send('OK');
+            }
+        })
+});
 //==========================================END Daily Resources========================================================
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get('/api/getAllDailyComments', passport.authenticate('jwt', { session: false }), function (req, res) {
+    let siteIds = req.param('sites');
+    let date = req.param('date');
+    DailyCommentModel
+        .find({
+            date: req.param('date'),
+            site:
+            { $in: siteIds.map(function (o) { return mongoose.Types.ObjectId(o); }) }
+        })
+        .populate([{
+            path: 'user',
+            model: 'User'
+        }, {
+                path: 'site',
+                model: 'Site'
+            }])
+        .exec(function (err, items) {
+            if (err) {
+                res.send('find no good' + err);
+            }
+            else {
+                res.json(items);
+            }
+        })
+});
+app.post('/api/addDailyComment', passport.authenticate('jwt', { session: false }), function (req, res) {
+    console.log(req.body);
+    var dailyComment = new DailyCommentModel(req.body);
+    dailyComment.save((err, newItem) => {
+        if (err) {
+            res.send('Error adding DailyComment\n' + err);
+        }
+        res.status(200).send('OK');
+    });
+});
+app.put('/api/updateDailyComment/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyCommentModel.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { date: req.body.date, site: req.body.site, user: req.body.user, amount: req.body.amount, } },
+        { upsert: true },
+        function (err, newDailyComment) {
+            if (err) {
+                res.send('Error updating DailyComment\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+app.delete('/api/deleteDailyComment/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyCommentModel.findOneAndRemove(
+        { _id: req.params.id },
+        function (err, newDailyComment) {
+            if (err) {
+                res.send('Error deleting DailyComment\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
 
 function findLike(model, searchString) {
     let results = [];
