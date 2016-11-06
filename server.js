@@ -621,7 +621,10 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
         })
 });
 app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
-     let siteIds = req.param('sites').split(',');
+    let siteIds =  req.param('sites');
+     if(!Array.isArray(siteIds)){
+         siteIds = siteIds.split(',');
+     }
     let date = req.param('date');
     DailyResourceModel
         .find({
@@ -755,7 +758,11 @@ app.post('/api/addDailyDefaultResources', passport.authenticate('jwt', { session
 
 
 app.get('/api/getAllDailyComments', passport.authenticate('jwt', { session: false }), function (req, res) {
-     let siteIds = req.param('sites').split(',');
+    console.log('site ============ '+req.param('sites'));
+     let siteIds =  req.param('sites');
+     if(!Array.isArray(siteIds)){
+         siteIds = siteIds.split(',');
+     }
     let date = req.param('date');
     DailyCommentModel
         .find({
