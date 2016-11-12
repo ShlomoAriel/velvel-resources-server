@@ -1,6 +1,6 @@
 "use strict";
 var express = require('express');
-var app = express();
+// var app = express();
 // var jwt = require('express-jwt');
 var cors = require('cors');
 var _ = require('lodash');
