@@ -365,7 +365,7 @@ app.post('/api/signup', passport.authenticate('jwt', { session: false }), functi
         res.json({ success: false, msg: 'Please pass email and password.' });
     } else {
         var newUser = new UserModel({
-            email: req.body.email,
+            email: req.body.toLowerCase(),
             name: req.body.name,
             role: req.body.role,
             password: req.body.password
@@ -383,7 +383,7 @@ app.post('/api/signup', passport.authenticate('jwt', { session: false }), functi
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 app.post('/api/authenticate', function (req, res) {
     UserModel.findOne({
-        email: req.body.email
+        email: req.body.email.toLowerCase()
     }).populate('role').exec(function (err, user) {
         if (err) throw err;
 
@@ -410,7 +410,7 @@ app.post('/api/authenticate', function (req, res) {
 app.post('/api/changePassword', function (req, res) {
     console.log('changing password');
     UserModel.findOne({
-        email: req.body.email
+        email: req.body.email.toLowerCase()
     }).populate('role').exec(function (err, user) {
         if (err) throw err;
         if (!user) {
@@ -458,7 +458,7 @@ app.get('/api/memberinfo', passport.authenticate('jwt', { session: false }), fun
     if (token) {
         var decoded = jwt.decode(token, config.secret);
         UserModel.findOne({
-            email: decoded.email
+            email: decoded.email.toLowerCase()
         }, function (err, user) {
             if (err) throw err;
 
@@ -479,7 +479,7 @@ var validateUser = function (req) {
         var decoded = jwt.decode(token, config.secret);
         console.log('decoded.email: ' + decoded.email);
         UserModel.findOne({
-            email: decoded.email
+            email: decoded.email.toLowerCase()
         }).exec(function (err, user) {
             if (err) {
                 return false;
@@ -528,6 +528,7 @@ app.put('/api/updateUser/:id', passport.authenticate('jwt', { session: false }),
 app.post('/api/addUser', passport.authenticate('jwt', { session: false }), (req, res, next) => {
     console.log('add user');
     var user = new UserModel(req.body);
+    user.email = user.email.toLowerCase();
     user.save((err, newItem) => {
         if (err) {
             return next(err.code);
