@@ -365,7 +365,7 @@ app.post('/api/signup', passport.authenticate('jwt', { session: false }), functi
         res.json({ success: false, msg: 'Please pass email and password.' });
     } else {
         var newUser = new UserModel({
-            email: req.body.toLowerCase(),
+            email: req.body.email.toLowerCase(),
             name: req.body.name,
             role: req.body.role,
             password: req.body.password
