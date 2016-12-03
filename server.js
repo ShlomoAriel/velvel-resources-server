@@ -659,7 +659,7 @@ app.post('/api/addDailyResource', passport.authenticate('jwt', { session: false 
         res.status(200).send('OK');
     });
 });
-app.post('api/addLastSiteResources', passport.authenticate('jwt', { session: false }),function(req, res){
+app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: false }),function(req, res){
     DailyResourceModel.findOne({ 'site._id': req.param('siteId') }).sort('-date').exec(function(err, resource) { 
         console.log('Last known date: ' + resource.date);
         if (err) {
