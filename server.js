@@ -662,6 +662,12 @@ app.post('/api/addDailyResource', passport.authenticate('jwt', { session: false 
 app.post('api/addLastSiteResources', passport.authenticate('jwt', { session: false }),function(req, res){
     DailyResourceModel.findOne({ 'site._id': req.param('siteId') }).sort('-date').exec(function(err, resource) { 
         console.log('Last known date: ' + resource.date);
+        if (err) {
+            res.send('Error adding DailyResource\n' + err);
+        }
+        else{
+            res.send(resource)
+        }
      }); 
 });
 app.put('/api/updateDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
