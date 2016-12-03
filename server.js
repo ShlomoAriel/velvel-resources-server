@@ -47,8 +47,8 @@ var _defaultResources = ['57e4c351c383b7bc38daacc5',
 
 app.use(cors());
 app.roles = [{ value: 1, label: 'admin' },
-    { value: 2, label: 'super' },
-    { value: 3, label: 'manager' }];
+{ value: 2, label: 'super' },
+{ value: 3, label: 'manager' }];
 
 // var authCheck = jwt({
 //     secret: new Buffer('V2tICkXzvkrTDZBeoNQggQ4B9jJV4RjL6b7jovB7VOahBQiL4gGxyt4G_2nFA8_J', 'base64'),
@@ -578,24 +578,24 @@ app.get('/api/getUserSites/:id', (req, res) => {
         .exec(function (err, user) {
             let searchObject = {};
             if (user.role._id == '57d27d4313d468481b1fe12e') {
-                SiteModel.find( function (err, sites) {
-                if (err) {
-                    res.send('find no good' + err);
-                }
-                else {
-                    res.json(sites);
-                }
-            });
+                SiteModel.find(function (err, sites) {
+                    if (err) {
+                        res.send('find no good' + err);
+                    }
+                    else {
+                        res.json(sites);
+                    }
+                });
             }
-            else{
+            else {
                 SiteModel.find({ user_ids: req.params.id }, function (err, sites) {
-                if (err) {
-                    res.send('find no good' + err);
-                }
-                else {
-                    res.json(sites);
-                }
-            });
+                    if (err) {
+                        res.send('find no good' + err);
+                    }
+                    else {
+                        res.json(sites);
+                    }
+                });
             }
         });
 });
@@ -609,9 +609,9 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
             path: 'resourceType',
             model: 'ResourceType'
         }, {
-                path: 'site',
-                model: 'Site'
-            }])
+            path: 'site',
+            model: 'Site'
+        }])
         .exec(function (err, items) {
             if (err) {
                 res.send('find no good' + err);
@@ -622,10 +622,10 @@ app.get('/api/getDailyResources', passport.authenticate('jwt', { session: false 
         })
 });
 app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: false }), function (req, res) {
-    let siteIds =  req.param('sites');
-     if(!Array.isArray(siteIds)){
-         siteIds = siteIds.split(',');
-     }
+    let siteIds = req.param('sites');
+    if (!Array.isArray(siteIds)) {
+        siteIds = siteIds.split(',');
+    }
     let date = req.param('date');
     DailyResourceModel
         .find({
@@ -637,9 +637,9 @@ app.get('/api/getAllDailyResources', passport.authenticate('jwt', { session: fal
             path: 'resourceType',
             model: 'ResourceType'
         }, {
-                path: 'site',
-                model: 'Site'
-            }])
+            path: 'site',
+            model: 'Site'
+        }])
         .exec(function (err, items) {
             if (err) {
                 res.send('find no good' + err);
@@ -659,24 +659,61 @@ app.post('/api/addDailyResource', passport.authenticate('jwt', { session: false 
         res.status(200).send('OK');
     });
 });
-app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: false }),function(req, res){
-    DailyResourceModel.findOne({ 'site._id': req.param('siteId') })
-    .populate([{
+app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: false }), function (req, res) {
+    let siteId = req.param('siteId');
+    let date = req.param('date');
+
+    console.log('\n SITE ID: ' + siteId + ' \n')
+
+    DailyResourceModel.findOne({ 'site': siteId })
+        .populate([{
             path: 'resourceType',
             model: 'ResourceType'
         }, {
-                path: 'site',
-                model: 'Site'
-            }])
-    .sort('-date').exec(function(err, resource) { 
-        console.log('Last known date: ' + resource.date);
-        if (err) {
-            res.send('Error adding DailyResource\n' + err);
-        }
-        else{
-            res.send(resource)
-        }
-     }); 
+            path: 'site',
+            model: 'Site'
+        }])
+        .sort('-date').exec(function (err, resource) {
+            console.log('Last known date: ' + resource.date);
+            if (err) {
+                res.send('Error adding DailyResource\n' + err);
+            }
+            else {
+                //res.send(resource)
+                DailyResourceModel
+                    .find({
+                        date: resource.date,
+                        site: siteId
+                    })
+                    .populate([{
+                        path: 'resourceType',
+                        model: 'ResourceType'
+                    }, {
+                        path: 'site',
+                        model: 'Site'
+                    }])
+                    .exec(function (err, items) {
+                        if (err) {
+                            res.send('find no good' + err);
+                        }
+                        else {
+                            _.forEach(items, (item) => {
+                                var dailyResource = new DailyResourceModel();
+                                dailyResource.resourceType = item.resourceType;
+                                dailyResource.date = date;
+                                dailyResource.site = item.site;
+                                dailyResource.amount = item.amount;
+                                dailyResource.save((err, newItem) => {
+                                    if (err) {
+                                        res.send('Error adding default DailyResource\n' + err);
+                                    }
+                                });
+                            })
+                            res.json("Success");
+                        }
+                    })
+            }
+        });
 });
 app.put('/api/updateDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyResourceModel.findOneAndUpdate(
@@ -712,9 +749,9 @@ function getDailyResources(date, siteId) {
             path: 'resourceType',
             model: 'ResourceType'
         }, {
-                path: 'site',
-                model: 'Site'
-            }])
+            path: 'site',
+            model: 'Site'
+        }])
         .exec(function (err, items) {
             if (err) {
                 res.send('find no good' + err);
@@ -778,11 +815,11 @@ app.post('/api/addDailyDefaultResources', passport.authenticate('jwt', { session
 
 
 app.get('/api/getAllDailyComments', passport.authenticate('jwt', { session: false }), function (req, res) {
-    console.log('site ============ '+req.param('sites'));
-     let siteIds =  req.param('sites');
-     if(!Array.isArray(siteIds)){
-         siteIds = siteIds.split(',');
-     }
+    console.log('site ============ ' + req.param('sites'));
+    let siteIds = req.param('sites');
+    if (!Array.isArray(siteIds)) {
+        siteIds = siteIds.split(',');
+    }
     let date = req.param('date');
     DailyCommentModel
         .find({
@@ -794,9 +831,9 @@ app.get('/api/getAllDailyComments', passport.authenticate('jwt', { session: fals
             path: 'user',
             model: 'User'
         }, {
-                path: 'site',
-                model: 'Site'
-            }])
+            path: 'site',
+            model: 'Site'
+        }])
         .exec(function (err, items) {
             if (err) {
                 res.send('find no good' + err);
@@ -904,7 +941,7 @@ db.once('open', function () {
     initDB();
 
     //db.example.update({}, {$unset: {words:1}} , {multi: true});
-    
+
     TypeModel.update({}, { $unset: { value: 1 } }, { multi: true });
     RoleModel.update({}, { $unset: { value: 1 } }, { multi: true });
     SiteModel.find(function (err, sites) {
