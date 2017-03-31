@@ -12,6 +12,7 @@ var mongoose = require('mongoose');
 var SiteModel = require('./models/site');
 var UserModel = require('./models/user');
 var WorkerModel = require('./models/worker');
+var DailyWorkerModel = require('./models/dailyWorker');
 var TypeModel = require('./models/type');
 var DailyDefaultModel = require('./models/dailyDefault');
 var ResourceModel = require('./models/resource');
