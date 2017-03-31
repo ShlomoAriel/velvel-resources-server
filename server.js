@@ -367,7 +367,7 @@ app.put('/api/updateWorker/:id', passport.authenticate('jwt', { session: false }
         {
             $set: {
                 name: req.body.name,
-                hourlyRate: req.body.value 
+                hourlyRate: req.body.hourlyRate 
             }
         },
         { upsert: true },
