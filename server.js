@@ -429,14 +429,21 @@ app.get('/api/getDailyWorker/:id', passport.authenticate('jwt', { session: false
         });
 });
 app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
-    DailyWorkerModel.find().populate('worker').exec(function (err, dailyWorkers) {
-        if (err) {
-            res.send('find no good' + err);
-        }
-        else {
-            res.json(dailyWorkers);
-        }
-    })
+     DailyWorkerModel.find({ date: req.param('date'), site: req.param('site') })
+        .populate([{
+            path: 'worker',
+            model: 'worker'
+        }])
+        .exec(function (err, items) {
+            if (err) {
+                res.send('find no good' + err);
+            }
+            else {
+                res.json(items);
+            }
+        })
+
+
 });
 app.put('/api/updateDailyWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     console.log('updating dailyWorker: ' + req.body.name + ' ' + req.body.value);
