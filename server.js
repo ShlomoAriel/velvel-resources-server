@@ -429,19 +429,29 @@ app.get('/api/getDailyWorker/:id', passport.authenticate('jwt', { session: false
         });
 });
 app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
-     DailyWorkerModel.find({ date: req.param('date'), site: req.param('site') })
-        .populate([{
-            path: 'worker',
-            model: 'worker'
-        }])
-        .exec(function (err, items) {
-            if (err) {
-                res.send('find no good' + err);
-            }
-            else {
-                res.json(items);
-            }
-        })
+    DailyWorkerModel.find().populate('role').exec(function (err, dailyWorkers) {
+        if (err) {
+            res.send('find no good' + err);
+        }
+        else {
+            res.json(dailyWorkers);
+        }
+    })
+
+
+     // DailyWorkerModel.find({ date: req.param('date'), site: req.param('site') })
+     //    .populate([{
+     //        path: 'worker',
+     //        model: 'worker'
+     //    }])
+     //    .exec(function (err, items) {
+     //        if (err) {
+     //            res.send('find no good' + err);
+     //        }
+     //        else {
+     //            res.json(items);
+     //        }
+     //    })
 
 
 });
