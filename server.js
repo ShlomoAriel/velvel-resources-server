@@ -442,8 +442,6 @@ app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false })
                 res.json(items);
             }
         })
-
-
 });
 app.put('/api/updateDailyWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     console.log('updating dailyWorker: ' + req.body.name + ' ' + req.body.value);
