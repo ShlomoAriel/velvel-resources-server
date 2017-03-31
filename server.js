@@ -331,7 +331,7 @@ app.get('/api/findTypeLike', passport.authenticate('jwt', { session: false }), f
 //========================================== WORKER ========================================================
 app.post('/api/addWorker', passport.authenticate('jwt', { session: false }), function (req, res, next) {
     var worker = new WorkerModel(req.body);
-    worker.save((wrr, newItem) => {
+    worker.save((err, newItem) => {
         if (err) {
             return next(err);
         }
@@ -409,7 +409,7 @@ app.get('/api/findWorkerLike', passport.authenticate('jwt', { session: false }),
 //========================================== DailyWorker ========================================================
 app.post('/api/addDailyWorker', passport.authenticate('jwt', { session: false }), function (req, res, next) {
     var dailyWorker = new DailyWorkerModel(req.body);
-    dailyWorker.save((wrr, newItem) => {
+    dailyWorker.save((err, newItem) => {
         if (err) {
             return next(err);
         }
