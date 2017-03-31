@@ -330,7 +330,7 @@ app.get('/api/findTypeLike', passport.authenticate('jwt', { session: false }), f
 //==========================================END SITE========================================================
 //========================================== WORKER ========================================================
 app.post('/api/addWorker', passport.authenticate('jwt', { session: false }), function (req, res, next) {
-    var worker = new workerModel(req.body);
+    var worker = new WorkerModel(req.body);
     worker.save((wrr, newItem) => {
         if (err) {
             return next(err);
