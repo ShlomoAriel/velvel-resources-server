@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 // =============MODELS===================
 var SiteModel = require('./models/site');
 var UserModel = require('./models/user');
+var WorkerModel = require('./models/worker');
 var TypeModel = require('./models/type');
 var DailyDefaultModel = require('./models/dailyDefault');
 var ResourceModel = require('./models/resource');
@@ -319,6 +320,163 @@ app.get('/api/findTypeLike', passport.authenticate('jwt', { session: false }), f
         else {
             var searchString = req.param('searchString');
             let objectArray = _.filter(types, function (o) {
+                return o.name.includes(searchString);
+            });
+            res.json(objectArray);
+        }
+    });
+});
+//==========================================END SITE========================================================
+//========================================== WORKER ========================================================
+app.post('/api/addWorker', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var worker = new workerModel(req.body);
+    worker.save((wrr, newItem) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).send('OK');
+    });
+});
+app.get('/api/getWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    WorkerModel.findOne({ _id: req.params.id })
+        .exec(function (err, worker) {
+            if (err) {
+                res.send('error retriving worker\n' + err);
+            }
+            else {
+                console.log(worker);
+                res.json(worker);
+            }
+        });
+});
+app.get('/api/getWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
+    WorkerModel.find(function (err, workers) {
+        if (err) {
+            res.send('find no good' + err);
+        }
+        else {
+            res.json(workers);
+        }
+    })
+});
+app.put('/api/updateWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    console.log('updating Worker: ' + req.body.name + ' ' + req.body.value);
+    WorkerModel.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+            $set: {
+                name: req.body.name,
+                hourlyRate: req.body.value 
+            }
+        },
+        { upsert: true },
+        function (err, newWorker) {
+            if (err) {
+                res.send('Error updating worker\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+app.delete('/api/deleteWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    WorkerModel.findOneAndRemove(
+        { _id: req.params.id },
+        function (err, newWorker) {
+            if (err) {
+                res.send('Error deleting worker\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+app.get('/api/findWorkerLike', passport.authenticate('jwt', { session: false }), function (req, res) {
+    WorkerModel.find(function (err, workers) {
+        if (err) {
+            res.send('find no good' + err);
+        }
+        else {
+            var searchString = req.param('searchString');
+            let objectArray = _.filter(workers, function (o) {
+                return o.name.includes(searchString);
+            });
+            res.json(objectArray);
+        }
+    });
+});
+//========================================== DailyWorker ========================================================
+app.post('/api/addDailyWorker', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var dailyWorker = new DailyWorkerModel(req.body);
+    dailyWorker.save((wrr, newItem) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).send('OK');
+    });
+});
+app.get('/api/getDailyWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyWorkerModel.findOne({ _id: req.params.id })
+        .exec(function (err, dailyWorker) {
+            if (err) {
+                res.send('error retriving dailyWorker\n' + err);
+            }
+            else {
+                console.log(dailyWorker);
+                res.json(dailyWorker);
+            }
+        });
+});
+app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyWorkerModel.find(function (err, dailyWorkers) {
+        if (err) {
+            res.send('find no good' + err);
+        }
+        else {
+            res.json(dailyWorkers);
+        }
+    })
+});
+app.put('/api/updateDailyWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    console.log('updating dailyWorker: ' + req.body.name + ' ' + req.body.value);
+    DailyWorkerModel.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+            $set: {
+                name: req.body.name,
+                hourlyRate: req.body.value 
+            }
+        },
+        { upsert: true },
+        function (err, newDailyWorker) {
+            if (err) {
+                res.send('Error updating dailyWorker\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+app.delete('/api/deleteDailyWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyWorkerModel.findOneAndRemove(
+        { _id: req.params.id },
+        function (err, newDailyWorker) {
+            if (err) {
+                res.send('Error deleting dailyWorker\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+app.get('/api/findDailyWorkerLike', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyWorkerModel.find(function (err, dailyWorkers) {
+        if (err) {
+            res.send('find no good' + err);
+        }
+        else {
+            var searchString = req.param('searchString');
+            let objectArray = _.filter(dailyWorkers, function (o) {
                 return o.name.includes(searchString);
             });
             res.json(objectArray);
