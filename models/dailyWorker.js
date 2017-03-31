@@ -19,10 +19,18 @@ var DailyWorkerSchema = new Schema({
         type:Schema.ObjectId,
         ref:'User', 
         required: true
+    }
+    ,
+    hourlyRate: { 
+        type: Number,
+        required: true,
+        unique: false 
     },
-    hourlyRate: { type: Number, required: true, unique: false },
-    hours: { type: Number, required: true, unique: false }
+    hours: { 
+        type: Number,
+        required: true,
+        unique: false 
+    }
 });
-// submissionSchema.index({ email: 1, sweepstakes_id: 1 }, { unique: true });
 var DailyWorker = mongoose.model('DailyWorker', DailyWorkerSchema);
 module.exports = DailyWorker;
