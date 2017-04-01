@@ -453,7 +453,13 @@ app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false })
 app.get('/api/getAllDailyWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyWorkerModel
         .find()
-        .populate('worker')
+        .populate([{
+            path: 'worker',
+            model: 'Worker'
+        }, {
+            path: 'site',
+            model: 'Site'
+        }])
         .exec(function (err, items) {
             if (err) {
                 res.send('find no good' + err);
