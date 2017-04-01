@@ -434,19 +434,13 @@ app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false })
         siteIds = siteIds.split(',');
     }
     let date = req.param('date');
-    DailyResourceModel
+    DailyWorkerModel
         .find({
             date: req.param('date'),
             site:
             { $in: siteIds.map(function (o) { return mongoose.Types.ObjectId(o); }) }
         })
-        .populate([{
-            path: 'resourceType',
-            model: 'ResourceType'
-        }, {
-            path: 'site',
-            model: 'Site'
-        }])
+        .populate('worker')
         .exec(function (err, items) {
             if (err) {
                 res.send('find no good' + err);
