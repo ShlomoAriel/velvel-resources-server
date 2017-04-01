@@ -451,7 +451,6 @@ app.put('/api/updateDailyWorker/:id', passport.authenticate('jwt', { session: fa
                 worker: req.body.worker,
                 user: req.body.user
             }
-            { $set: { date: req.body.date, site: req.body.site, resourceType: req.body.resourceType, amount: req.body.amount, } },
         },
         { upsert: true },
         function (err, newDailyWorker) {
