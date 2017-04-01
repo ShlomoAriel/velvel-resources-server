@@ -26,6 +26,11 @@ var DailyWorkerSchema = new Schema({
         required: true,
         unique: false 
     },
+    commute: { 
+        type: Number,
+        required: true,
+        unique: false 
+    },
     hours: { 
         type: Number,
         required: true,
