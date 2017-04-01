@@ -450,6 +450,19 @@ app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false })
             }
         })
 });
+app.get('/api/getAllDailyWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
+    DailyWorkerModel
+        .find()
+        .populate('worker')
+        .exec(function (err, items) {
+            if (err) {
+                res.send('find no good' + err);
+            }
+            else {
+                res.json(items);
+            }
+        })
+});
 app.put('/api/updateDailyWorker/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     console.log('updating dailyWorker: ' + req.body.name + ' ' + req.body.value);
     DailyWorkerModel.findOneAndUpdate(
