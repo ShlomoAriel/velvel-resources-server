@@ -5,6 +5,12 @@ var DailyWorkerSchema = new Schema({
     date: { 
         type: Date,
         required: true},
+    endTime: { 
+        type: Date,
+        required: true},
+    startTime: { 
+        type: Date,
+        required: true},
     site:{
         type:Schema.ObjectId,
         ref:'Site', 
