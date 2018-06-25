@@ -481,7 +481,6 @@ app.put('/api/updateDailyWorker/:id', passport.authenticate('jwt', { session: fa
                 site: req.body.site,
                 worker: req.body.worker,
                 commute: req.body.commute,
-                restDay: req.body.restDay,
                 user: req.body.user
             }
         },
