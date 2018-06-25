@@ -37,6 +37,11 @@ var DailyWorkerSchema = new Schema({
         required: true,
         unique: false 
     },
+    restDay: { 
+        type: Boolean,
+        required: true,
+        default: false
+    },
     hours: { 
         type: Number,
         required: true,
