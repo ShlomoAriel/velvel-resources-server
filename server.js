@@ -451,6 +451,8 @@ app.get('/api/getDailyWorkers', passport.authenticate('jwt', { session: false })
             }
         })
 });
+
+
 app.get('/api/getAllDailyWorkers', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyWorkerModel
         .find()
