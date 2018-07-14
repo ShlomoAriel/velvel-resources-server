@@ -4,8 +4,8 @@ var app = express();
 // var jwt = require('express-jwt');
 var cors = require('cors');
 var _ = require('lodash');
-var mongodb = require('mongodb');
-var MongoClient = mongodb.MongoClient;
+// var mongodb = require('mongodb');
+// var MongoClient = mongodb.MongoClient;
 var mongoose = require('mongoose');
 
 
@@ -1097,6 +1097,7 @@ function findLike(model, searchString) {
             }
         });
 }
+console.log('app.listen(process.env.PORT || 3001);');
 app.listen(process.env.PORT || 3001);
 console.log('Listening on localhost 3001');
 mongoose.connect('mongodb://user1:a1345678@ds015995.mlab.com:15995/velevltest');
@@ -1145,11 +1146,11 @@ db.once('open', function () {
     RoleModel.update({}, { $unset: { value: 1 } }, { multi: true });
     SiteModel.find(function (err, sites) {
         if (err) { return console.error('find no good' + err) };
-        console.log('all sites' + sites);
+        // console.log('all sites' + sites);
     })
     UserModel.find(function (err, users) {
         if (err) { return console.error('find no good' + err) };
-        console.log('all users' + users);
+        // console.log('all users' + users);
     })
 });
 
