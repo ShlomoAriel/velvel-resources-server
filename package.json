@@ -8,6 +8,7 @@
     "prod": "webpack server.js bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  
   "engines": {
     "node": "9.4.0"
   },
