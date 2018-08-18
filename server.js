@@ -210,7 +210,7 @@ app.post('/api/addUserToSite/', passport.authenticate('jwt', { session: false })
                 console.log('isInArray: ' + isInArray);
                 if (isInArray === false) {
                     site.user_ids.push(req.param('userId'));
-                    console.log('site.user_ids.push(req.param('userId')); ' );
+                    console.log('site.user_ids.push(req.param ' );
                     site.save((err, newItem) => {
                         if (err) {
                             return next(err);
