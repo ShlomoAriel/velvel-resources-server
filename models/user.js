@@ -40,7 +40,7 @@ userSchema.methods.compareHashed = function (password, cb) {
         cb(null, true);
     } else{
         console.log('compareHashed going back bad');
-        cb(err);    
+        cb('err', false);    
     }
     
 }
