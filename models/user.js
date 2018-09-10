@@ -38,9 +38,11 @@ userSchema.methods.compareHashed = function (password, cb) {
     if (password === this.password) {
         console.log('compareHashed going back good');
         cb(null, true);
+    } else{
+        console.log('compareHashed going back bad');
+        cb(err);    
     }
-    console.log('compareHashed going back bad');
-    return cb(err);
+    
 }
 userSchema.methods.comparePassword = function (passw, cb) {
     console.log('compare this: ' + this);
