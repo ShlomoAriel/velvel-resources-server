@@ -866,56 +866,61 @@ app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: fa
     let date = req.param('date');
 
     console.log('\n SITE ID: ' + siteId + ' \n')
-
-    DailyResourceModel.findOne({ 'site': siteId })
-        .populate([{
-            path: 'resourceType',
-            model: 'ResourceType'
-        }, {
-            path: 'site',
-            model: 'Site'
-        }])
-        .sort('-date').exec(function (err, resource) {
-            console.log('Last known date: ' + resource.date);
-            if (err) {
-                res.send('Error adding DailyResource\n' + err);
-            }
-            else {
-                //res.send(resource)
-                DailyResourceModel
-                    .find({
-                        date: resource.date,
-                        site: siteId
-                    })
-                    .populate([{
-                        path: 'resourceType',
-                        model: 'ResourceType'
-                    }, {
-                        path: 'site',
-                        model: 'Site'
-                    }])
-                    .exec(function (err, items) {
-                        if (err) {
-                            res.send('find no good' + err);
-                        }
-                        else {
-                            _.forEach(items, (item) => {
-                                var dailyResource = new DailyResourceModel();
-                                dailyResource.resourceType = item.resourceType;
-                                dailyResource.date = date;
-                                dailyResource.site = item.site;
-                                dailyResource.amount = item.amount;
-                                dailyResource.save((err, newItem) => {
-                                    if (err) {
-                                        res.send('Error adding default DailyResource\n' + err);
-                                    }
-                                });
-                            })
-                            res.json("Success");
-                        }
-                    })
-            }
-        });
+    try{
+        DailyResourceModel.findOne({ 'site': siteId })
+            .populate([{
+                path: 'resourceType',
+                model: 'ResourceType'
+            }, {
+                path: 'site',
+                model: 'Site'
+            }])
+            .sort('-date').exec(function (err, resource) {
+                console.log('Last known date: ' + resource.date);
+                if (err) {
+                    res.send('Error adding DailyResource\n' + err);
+                }
+                else {
+                    //res.send(resource)
+                    DailyResourceModel
+                        .find({
+                            date: resource.date,
+                            site: siteId
+                        })
+                        .populate([{
+                            path: 'resourceType',
+                            model: 'ResourceType'
+                        }, {
+                            path: 'site',
+                            model: 'Site'
+                        }])
+                        .exec(function (err, items) {
+                            if (err) {
+                                res.send('find no good' + err);
+                            }
+                            else {
+                                _.forEach(items, (item) => {
+                                    var dailyResource = new DailyResourceModel();
+                                    dailyResource.resourceType = item.resourceType;
+                                    dailyResource.date = date;
+                                    dailyResource.site = item.site;
+                                    dailyResource.amount = item.amount;
+                                    dailyResource.save((err, newItem) => {
+                                        if (err) {
+                                            res.send('Error adding default DailyResource\n' + err);
+                                        }
+                                    });
+                                })
+                                res.json("Success");
+                            }
+                        })
+                }
+            });
+    } catch(err) {
+        console.log('request: ' + req)
+        console.log('err in addLastSiteResources: ' + err)
+        res.status(500).send('error adding site resource')
+    }
 });
 app.put('/api/updateDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyResourceModel.findOneAndUpdate(
@@ -1220,3 +1225,115 @@ app.delete('/api/deleteRole/:id', passport.authenticate('jwt', { session: false 
             }
         });
 });
+
+
+// =============MODELS===================
+var entities = {
+    SiteModel: require('./models/site'),
+    UserModel: require('./models/user'),
+    WorkerModel: require('./models/worker'),
+    DailyWorkerModel: require('./models/dailyWorker'),
+    TypeModel: require('./models/type'),
+    DailyDefaultModel: require('./models/dailyDefault'),
+    ResourceModel: require('./models/resource'),
+    RoleModel: require('./models/role'),
+    DailyResourceModel: require('./models/dailyResource'),
+    DailyCommentModel: require('./models/dailyComment'),
+}
+
+app.post('/api/addEntity', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var entity = getEntityModel(req.query.entityName, next) 
+    entity.save((err, newEntity) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).send('OK');
+    });
+});
+
+app.get('/api/getEntity/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var entity = getEntityModel(req.query.entityName, next)   
+    entity.findOne({ _id: req.params.id })
+        .exec(function (err, entity) {
+            if (err) {
+                next('error retriving entity\n' + err);
+            }
+            else {
+                console.log(entity);
+                res.json(entity);
+            }
+        });
+});
+
+app.get('/api/getEntities', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var entity = getEntityModel(req.query.entityName, next)
+    entity.find(function (err, entities) {
+        if (err) {
+            next('getEntities no good' + err);
+        }
+        else {
+            res.json(entities);
+        }
+    })
+});
+
+app.put('/api/updateEntity/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    console.log('updating entity: ' + req.body.entityData.name)
+    var entity = getEntityModel(req.body.entityName, next)
+    entity.findOneAndUpdate(
+        { _id: req.params.id },
+        req.body.entityData,
+        { upsert: true },
+        function (err, newEntity) {
+            if (err) {
+                next('Error updating Entity\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+
+app.delete('/api/deleteEntity/:id', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var entity = getEntityModel(req.body.entityName, next)
+    entity.findOneAndRemove(
+        { _id: req.params.id },
+        function (err, newEntity) {
+            if (err) {
+                next('Error deleting Entity\n' + err);
+            }
+            else {
+                res.send(204);
+            }
+        });
+});
+
+app.get('/api/findEntityLike', passport.authenticate('jwt', { session: false }), function (req, res, next) {
+    var entity = getEntityModel(req.body.entityName, next)
+    entity.find(function (err, entities) {
+        if (err) {
+            next('find no good' + err);
+        }
+        else {
+            var searchString = req.param('searchString');
+            let objectArray = _.filter(entities, function (o) {
+                return o.name.includes(searchString);
+            });
+            res.json(objectArray);
+        }
+    });
+});
+
+function getEntityModel(name, next){
+    var entityName = name
+    if(!entityName){
+        next('Entity Name no good');
+    }
+    try {
+        var entity = require('./models/' + entityName)
+    }
+    catch (err) {
+        next('Entity path ./models/' + entityName + ' not found\n' + err)
+    }
+    return entity
+}
