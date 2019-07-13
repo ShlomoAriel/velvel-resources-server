@@ -928,18 +928,23 @@ app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: fa
     }
 });
 app.put('/api/updateDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
-    DailyResourceModel.findOneAndUpdate(
-        { _id: req.params.id },
-        { $set: { date: req.body.date, site: req.body.site, resourceType: req.body.resourceType, amount: req.body.amount, } },
-        { upsert: true },
-        function (err, newDailyResource) {
-            if (err) {
-                res.send('Error updating DailyResource\n' + err);
-            }
-            else {
-                res.send(204);
-            }
-        });
+    if(req.body.amount == null || req.body.amount == undefined || req.body.amount == ""){
+        res.send(400);
+    }
+    else{
+        DailyResourceModel.findOneAndUpdate(
+            { _id: req.params.id },
+            { $set: { date: req.body.date, site: req.body.site, resourceType: req.body.resourceType, amount: req.body.amount, } },
+            { upsert: true },
+            function (err, newDailyResource) {
+                if (err) {
+                    res.send('Error updating DailyResource\n' + err);
+                }
+                else {
+                    res.send(204);
+                }
+            });
+    }
 });
 app.delete('/api/deleteDailyResource/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
     DailyResourceModel.findOneAndRemove(
