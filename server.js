@@ -879,7 +879,7 @@ app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: fa
                 console.log('Last known date: ' + resource.date);
                 if (err) {
                     console.log('Error adding DailyResource\n' + err);
-                    res.send('Error adding DailyResource\n' + err);
+                    // res.send('Error adding DailyResource\n' + err);
                 }
                 else {
                     console.log('else 885');
@@ -899,7 +899,7 @@ app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: fa
                         .exec(function (err, items) {
                             if (err) {
                                 console.log('find no good' + err);
-                                res.send('find no good' + err);
+                                // res.send('find no good' + err);
                             }
                             else {
                                 console.log('else 905');
@@ -912,7 +912,7 @@ app.post('/api/addLastSiteResources', passport.authenticate('jwt', { session: fa
                                     dailyResource.save((err, newItem) => {
                                         if (err) {
                                             console.log('Error adding default DailyResource\n' + err);
-                                            res.send('Error adding default DailyResource\n' + err);
+                                            // res.send('Error adding default DailyResource\n' + err);
                                         }
                                     });
                                 })
