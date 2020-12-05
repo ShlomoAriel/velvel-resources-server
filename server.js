@@ -1118,7 +1118,8 @@ function findLike(model, searchString) {
 console.log('app.listen(process.env.PORT || 3001);');
 app.listen(process.env.PORT || 3001);
 console.log('Listening on localhost 3001');
-mongoose.connect('mongodb://user1:a1345678@ds015995.mlab.com:15995/velevltest');
+// mongoose.connect('mongodb://user1:a1345678@ds015995.mlab.com:15995/velevltest');
+mongoose.connect('mongodb://user1:a1345678@velevlresources.7xmn6.mongodb.net/velevltest?retryWrites=true&w=majority');
 // mongoose.connect('mongodb://localhost/example');
 
 var db = mongoose.connection;
